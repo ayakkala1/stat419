@@ -439,9 +439,9 @@ M &lt;- M * val</code></pre>
 </ol>
 <pre class="r"><code>M &lt;- M * (100 * svd(H)$u)</code></pre>
 <ol start="8" style="list-style-type: decimal">
-<li>Calculate the sum of the eigenvalues of M. Divide <em>every</em> element of M by this scalar</li>
+<li>Calculate the sum of the singular values of H. Divide <em>every</em> element of M by this scalar.</li>
 </ol>
-<pre class="r"><code>M &lt;- M / sum(svd(H)$d ** 2)</code></pre>
+<pre class="r"><code>M &lt;- M / sum(svd(H)$d)</code></pre>
 </div>
 <div id="the-results" class="section level2">
 <h2>The results</h2>

@@ -99,10 +99,10 @@ M <- M * (100 * svd(H)$u)
 ```
 
 
-8. Calculate the sum of the eigenvalues of M.  Divide *every* element of M by this scalar
+8. Calculate the sum of the singular values of H.  Divide *every* element of M by this scalar.
 
 ```{r}
-M <- M / sum(svd(H)$d ** 2)
+M <- M / sum(svd(H)$d)
 ```
 
 ## The results

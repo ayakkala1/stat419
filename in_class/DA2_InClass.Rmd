@@ -1,0 +1,224 @@
+---
+title: 'Lab 2: Summarizing Multivariate Data'
+author: "Anish Yakkala"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r, include = FALSE}
+## IGNORE THIS
+options(digits=3)
+knitr::opts_chunk$set(fig.width=7) 
+library(dplyr)
+library(ggplot2)
+library(tcltk)
+library(aplpack)
+library(stringr)
+library(plotly)
+library(GGally)
+library(skimr)
+```
+
+## Reading the Data
+
+In this lab, we will examine data college tuition rates, based on a 1995 dataset from US News and World Report.
+
+```{r, eval = TRUE}
+
+# Read Data
+colleges = read.csv('http://kbodwin.web.unc.edu/files/2016/09/tuition_final.csv')
+
+# Adjust labels for later
+
+colleges <- colleges %>% mutate(
+  Name = gsub("California State Univ. at", "CSU", Name),
+  Name = gsub("California State University at", "CSU", Name),
+  Name = gsub("California Polytechnic", "Cal Poly", Name),
+  Name = gsub("California Poly", "Cal Poly", Name),
+  Name = gsub("University of California at", "UC", Name)
+)
+
+```
+
+Check out the `summary()` of the dataset and familiarize yourself with the variables. 
+
+```{r}
+summary(colleges)
+skim(colleges)
+```
+
+*  Briefly describe the variables in this dataset - what do they represent?  What are the possible values?
+
+List of colleges with a bunch of features about them, and ID is the id of the school.
+***
+## Adjusting and cleaning the data
+
+Note that the variable "Public" tells us whether a school is public or private.  However, the categories are labeled "1" and "2", so R thinks this is a numerical value.  We will use the dplyr function `mutate()` to adjust this variable, and also to create a new one called `Acc.Rate`.
+
+```{r}
+colleges <- colleges %>% 
+  mutate(
+    Public = factor(Public, labels = c("Public", "Private")),
+    Acc.Rate = Accepted/Applied
+  )
+```
+
+*  What information is now contained in the variable Acc.Rate?  Why might we prefer this to the original data?
+
+Proportion of students that were accepted out of applied. This gives us what we really want to know from the two variables, accepted and applied. Also gives us a good way to compare the schools in a standardized way.
+
+*  What would happen if we removed "colleges <-" from the beginning of the above code?
+
+We would not save this change into the colleges dataset.
+
+***
+Now we would like to take a look at the public schools in California, and compare them using our multivariate plotting tools.  First, let's make a dataset containing only these schools using the dplyr function `filter()`.
+
+```{r}
+# Dataset of only CA public schools
+CA_public <- colleges %>%
+  filter(State == "CA", Public == "Public") %>% 
+  select(Name, Avg.SAT, Acc.Rate, Size, Out.Tuition, Spending) %>%
+  na.omit()
+```
+
+*  What did we do in the third line of code, using "select()"?
+
+It selectes the columns specified in the argument
+
+*  What did "na.omit()" do in the fourth line of code?
+
+Removes any rows with nans in them.
+
+
+***
+## Face Plots
+
+Now we can make plots for the CA public schools for which we have full information.  We will start with the Chernoff faces plotting style.
+
+```{r}
+CA_public %>%
+  select(Avg.SAT, Acc.Rate, Size, Out.Tuition, Spending) %>%
+  faces(labels = CA_public$Name)
+```
+
+*  What do you observe from this plot?  Which schools are similar to each other?  Which schools stand out as unique?
+
+Fullerton, SJSU, CSU Northridge and SFSU seem similar. Also UC Irvine and UC San Diego. Sonomo State and Westmont College seem pretty unique.
+
+*  What are the advantages and disadvantages of the face plot style?
+
+Pretty easy to notice differences and compare. However once there is a lot of features it can become hard to track all of them. Also if this is taking into account bigger values with a happier face, then it can be innapropriate for some cases.
+
+***
+## Star plots
+
+One downside of the face plots is that it is difficult to tell which specific variables are being compared.  A solution to this is called "star plots".
+
+```{r}
+CA_public %>%
+  select(Avg.SAT, Acc.Rate, Size, Out.Tuition, Spending) %>%
+  stars(labels = CA_public$Name, nrow = 4, key.loc = c(0,10), cex = .5)
+
+```
+
+*  Which school has the highest out-of-state tuition in this data?
+
+Westmont College
+
+*  Which school has the lowest acceptance rate in this data?
+
+Sonoma State
+
+*  Which two schools seem most similar to you, based on these plots?
+
+SJSU and Fullerton
+
+*  What are the advantages and disadvantages of this plot style?
+
+A positive is it that it is a good way to merge all variables in a easy way to compare between groups. Geometrically it can be hard to tell which variable is being extended.
+
+***
+## Segmented Star Plots
+
+To better visualize our data, we can "segment" our star plots, and plot them as slices of a circular area rather than as lines in a polygon.
+
+```{r}
+CA_public %>%
+  select(Avg.SAT, Acc.Rate, Size, Out.Tuition, Spending) %>%
+  stars(labels = CA_public$Name, nrow = 4, key.loc = c(0,10), cex = .5, draw.segments = TRUE, col.segments = rainbow(6))
+```
+
+
+*  In what way does Cal Poly most differ from the other CSUs?
+
+Acceptance Rate and Avg Sat
+
+*  In what way does Westmont College most differ from the other schools?
+
+Out of State Tuition
+
+*  Which is the largest public school in California?
+
+UCLA
+
+*  What are the advantages and disadvantages of this plot style?
+
+I really like that they color code this because it makes it easier to see which parts they are talking about. When things get small it is hard to compare two small ones.
+
+***
+## Scatterplots 
+
+Finally, we can think about pairwise relationships between variables, rather than comparisons between schools.  We will use the `ggplot2` framework for these plots.  Make sure that you understand each step in the code below: 
+
+
+```{r}
+colleges %>%
+  ggplot(aes(x = Avg.SAT, y = Out.Tuition)) + geom_point() + facet_grid(~Public)
+```
+
+*  Based on these scatterplots, is there a relationship between Average SAT score and the out-of-state tuition of a school?
+
+Seems like there is a positive association.
+
+*  Based on these scatterplots, is the relationship different for Public versus Private schools?
+
+Does not appear so
+
+***
+
+We can also quite easily make all the possible scatterplots for the dataset using the `ggplot` function `ggpairs`:
+
+```{r}
+colleges %>%
+  select(Public, Avg.SAT, Acc.Rate, Size, Out.Tuition, Spending) %>%
+  na.omit() %>%
+  ggpairs()
+```
+
+* Are there more public schools or more private schools in this dataset?
+
+More Private
+
+* Which variables are very different between public schools and private schools?  Does this surprise you?
+
+Size
+
+* Which variables seem to be strongly positively correlated?  In real world terms, why does this make sense?
+
+Out Tuition and Spending. This makes sense since Out Tuition is a lot more and that gives them more money to spend.
+
+* Which variables seem to be strongly negatively correlated?  In real world terms, why does this make sense?
+
+Avg Sat and Acceptance Rate. Since schools with a lower acceptance rate are more prestigious and accept students with a higher Avg Sat score.
+
+* Which variables, if any, seem like they might be Normally distributed?
+
+Avg Sat and Out Tuition.
+
+
+
+
+
+
