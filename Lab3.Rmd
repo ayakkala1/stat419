@@ -1,6 +1,6 @@
 ---
 title: 'Lab 3: Testing Mean Vectors'
-author: "YOUR NAME HERE"
+author: "Anish Yakkala"
 output:
   pdf_document: default
   html_document: default
@@ -66,19 +66,24 @@ Description of attributes:
 
    3 - citric acid: found in small quantities, citric acid can add 'freshness' and flavor to wines
 
-   4 - residual sugar: the amount of sugar remaining after fermentation stops, it's rare to find wines with less than 1 gram/liter and wines with greater than 45 grams/liter are considered sweet
+   4 - residual sugar: the amount of sugar remaining after fermentation stops, it's rare to find wines with 
+       less than 1 gram/liter and wines with greater than 45 grams/liter are considered sweet
 
    5 - chlorides: the amount of salt in the wine
 
-   6 - free sulfur dioxide: the free form of SO2 exists in equilibrium between molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial growth and the oxidation of wine
+   6 - free sulfur dioxide: the free form of SO2 exists in equilibrium between molecular SO2 (as a dissolved gas) 
+       and bisulfite ion; it prevents microbial growth and the oxidation of wine
 
-   7 - total sulfur dioxide: amount of free and bound forms of S02; in low concentrations, SO2 is mostly undetectable in wine, but at free SO2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
+   7 - total sulfur dioxide: amount of free and bound forms of S02; in low concentrations, 
+       SO2 is mostly undetectable in wine, but at free SO2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
 
    8 - density: the density of water is close to that of water depending on the percent alcohol and sugar content
 
-   9 - pH: describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic); most wines are between 3-4 on the pH scale
+   9 - pH: describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic);
+       most wines are between 3-4 on the pH scale
 
-   10 - sulphates: a wine additive which can contribute to sulfur dioxide gas (S02) levels, wich acts as an antimicrobial and antioxidant
+   10 - sulphates: a wine additive which can contribute to sulfur dioxide gas (S02) levels, 
+        wich acts as an antimicrobial and antioxidant
 
    11 - alcohol: the percent alcohol content of the wine
 
@@ -97,7 +102,8 @@ Our dataset today contains only some of the **red wines** from this study.
 How many wines were rated "bad"?  How many were rated "good"?
 
 ```
-YOUR ANSWER HERE
+0: 63
+1: 18
 ```
 
 ***
@@ -115,15 +121,16 @@ wine_sub <- wine %>%
 Apply the function `ggpairs()` to your new subset to plot all the variable pairs.  
 
 
-```{r}
-### YOUR CODE HERE ###
+```{r message=FALSE}
+ggpairs(wine_sub)
 ```
 
 
 What can you say about this data based on the plot?
 
 ```
-YOUR ANSWER HERE
+pH has normal looking distribution, there seems to be a weak correlation between residual sugar and pH.
+The Residual Sugars seem to be distributed fairly similiraily between the two groups.
 ```
 
 ## Checking Multivariate Normality
@@ -132,12 +139,14 @@ Add to the following code chunk to produce a Normal Q-Q plots for pH as well as 
 
 ```{r}
 ggplot(wine_sub, aes(sample = residual.sugar)) + geom_qq() + ggtitle("QQ Plot of Residual Sugar")
+ggplot(wine_sub, aes(sample = pH)) + geom_qq() + ggtitle("QQ Plot of pH")
+
 ```
 
 Comment on these plots.  What do you conclude?
 
 ```
-YOUR ANSWER HERE
+Residual sugars seems to trail off the expected values near the end. Which gives suggestive evidence that the errors are not normally distributed. While pH seem to have be normally distributed based on the QQ plot as it follows a line fairly well.
 ```
 
 
@@ -145,13 +154,16 @@ Create a data matrix $Y$ for the two numeric variables `pH` and `residual.sugar`
 
 ```{r}
 ### YOUR CODE HERE ###
-Y <- 1
+Y <- wine_sub %>%
+           select(residual.sugar,pH)
+
+mvn(Y)
 ```
 
 Is it reasonable to treat this data matrix as multivariate Normal?  Why or why not?
 
 ```
-YOUR ANSWER HERE
+Both the Mardia skewness and Kurtosis tests gave a p value of <.001. So at the 5% significance level we reject the null hypothesis that the data is multivariate normal.
 ```
 
 ## Practice with Multivariate Normality
@@ -160,25 +172,42 @@ Suppose you are told that this data **is** from a multivariate Normal distributi
 
 ```{r}
 ### EDIT THIS CODE ###
+y_bar <- as.matrix(colMeans(Y))
 
-y_bar <- 1
-S_y <- 1
+S_y <- cov(Y)
 ```
 
 
 ***
 
-Suppose it is hypothesized that on average for red wine, the residual sugar is equal to 1/3 of the pH.  Test this hypothesis.  Do **not** define a new variable in your dataset; instead, use your matrix $Y$ and your calculations above.  Be sure to state your hypotheses and conclusion - you may use R to find an exact p-value, or you may compare your result to a critical value of 2.
+Suppose it is hypothesized that on average for red wine, the residual sugar is equal to 80% of the pH.  Test this hypothesis.  Do **not** define a new variable in your dataset; instead, use your matrix $Y$ and your calculations above.  Be sure to state your hypotheses and conclusion - you may use R to find an exact p-value, or you may compare your result to a critical value of 2.
 
 *Hint: Define a new variable $W$ that is a linear combination of variables in $Y$.  What is the distribution of $W$?*
 
 ```{r}
-### YOUR CODE HERE ###
+a <- matrix(c(1,-0.8),2,1)
+
+# Sample d 
+W <- t(a) %*% (y_bar)
+
+S_w <- (t(a) %*% S_y %*% a)
+
+SE <- sqrt((1/81 + 1/81) * S_w)
+
+test_statistic <- W/SE
 ```
 
-```
-YOUR ANSWER HERE
-```
+\[
+\begin{split}
+& H_{o} : \mu_{residual.sugar} - 0.8 * \mu_{pH} = 0 \\
+& H_{a} : \mu_{residual.sugar} - 0.8 * \mu_{pH} \neq 0 \\
+& \alpha = 0.05 \\ \\
+& t = 0.0983 \\
+\end{split}
+\]
+
+At the 5% significance level we can not reject the null hypothesis that residual sugar is equal to 80% of the pH, since our observed test statistic is 0.0983, which is not larger than the critical value of 2.
+
 
 ***
 
@@ -191,19 +220,39 @@ Calculate the individual mean vectors and covariance matrices for good wines and
 
 ```{r}
 ### YOUR CODE HERE ###
-y_bar_1 = 1
-y_bar_2 = 1
 
-S_1 = 1
-S_2 = 1
+n1 <- nrow(wine_sub %>%
+    filter(quality == 0) %>%
+      select(residual.sugar,pH))
 
-S_p = 1
+n2 <- nrow(wine_sub %>%
+    filter(quality == 1) %>%
+      select(residual.sugar,pH))
+
+y_bar_1 = as.matrix(colMeans(wine_sub %>%
+                    filter(quality == 0) %>%
+                      select(residual.sugar,pH)))
+y_bar_2 = as.matrix(colMeans(wine_sub %>%
+                    filter(quality == 1) %>%
+                      select(residual.sugar,pH)))
+
+S_1 = cov(wine_sub %>%
+                    filter(quality == 0) %>%
+                      select(residual.sugar,pH))
+S_2 = cov(wine_sub %>%
+                    filter(quality == 1) %>%
+                      select(residual.sugar,pH))
+
+S_p = (((n1 - 1) * S_1) + ((n2 - 1) * S_2))/(n1 + n2 - 2)
+
+(det(S_1)^((n1-1)/2) * det(S_2)^((n2-1)/2))/det(S_p)^(18+63-2)
+
 ```
 
 Compare these to each other, and to the `S_y` you found above.  Do you think it makes sense to pool the covariance?
 
 ```
-YOUR ANSWER HERE
+Using the test of determinants on the covariances matrices we find that the statistic is not close to 1. So it not fair to pool the variances.
 ```
 
 ***
@@ -211,13 +260,18 @@ YOUR ANSWER HERE
 Calculate a T-squared statistic for this test, by using matrix algebra on your above calculations.
 
 ```{r}
-### YOUR CODE HERE ###
+library(Hotelling)
+d_bar <- y_bar_1 - y_bar_2
+
+S_dbar <- S_1/n1 + S_2/n2
+
+T_square <- t(d_bar) %*% solve(S_dbar) %*% d_bar
 ```
 
 Why might we be comfortable performing a Hotelling's T-Squared test, even if we are not confident that the data is Multivariate Normal?
 
 ```
-YOUR ANSWER HERE
+Multivariate Central Limit Theorem, using the fact that we have with sample sizes greater than 15.
 ```
 
 Now take a look at the function `hotelling.test()`.  Then run the code supplied below.
@@ -233,9 +287,17 @@ htest
 
 Report these results.  What were the hypotheses?  What was the test statistic?  What do you conclude?
 
-```
-YOUR ANSWER HERE
-```
+\[
+\begin{split}
+& H_{o} : \vec{\mu}_{good} - \vec{\mu}_{bad} = 0 \\
+& H_{a} : \vec{\mu}_{good} - \vec{\mu}_{bad} \neq 0 \\
+& \alpha = 0.05 \\ \\
+& T^{2} = 2.9573 \\
+& \text{p-value } =  0.05781 
+\end{split}
+\]
+
+At the 5% significance level we can not reject the null hypothesis that the difference in mean pH and residual sugar for good and bad wines are the same.
 
 
 *Note: Since this test involved only a 2x2 matrix, you might want to consider using this data to practice doing $T^2$ tests by hand, and then compare your answers to the R output.*
@@ -246,19 +308,22 @@ YOUR ANSWER HERE
 We may wish to ask ourselves where, exactly, the differences in mean vectors lie.  Do good wines have different pH than bad wines?  Do they have different residual sugar?  Use R to perform individual two-sample t-tests for the two variables. Hint:  The function `t.test()` takes similar input as `hotelling.test()`
 
 ```{r}
-### YOUR CODE HERE ###
+tidy(t.test(pH ~ quality, data = wine_sub))
+tidy(t.test(residual.sugar ~ quality, data = wine_sub))
+
 ```
 
 What do you conclude based on the individual t tests?
 
 ```
-YOUR ANSWER HERE
+That we cannot reject the null hypothesis that the mean residual sugar for good and bad wines are the same, and that we can reject the null hypothesis that the mean pH for good and bad wines are the same. All at the 5% significance level.
 ```
 
 Why did we run a Hotelling's T-squared first, rather than simply performing two separate t-tests?
 
 ```
-YOUR ANSWER HERE
+The seperate t-tests do not take into account the relationship between pH and residual.sugar. This is what is being done in the Hotelling T Squared test by using the covariances.
+Also the results for the two tests are not one to one.
 ```
 
 ***
@@ -282,7 +347,8 @@ ttest_all_vars <- function(data, response){
     select(-response) %>%
     map_df(~tidy(t.test(.x ~ data[,response]))) %>%
     mutate(
-      Chemical.Property = names(wine_vars),
+      Chemical.Property = names(wine %>%
+                                  select(-response)),
       observed.diff = estimate,
       t.score = statistic
     )
@@ -297,7 +363,83 @@ ttest_all_vars <- function(data, response){
 ```
 
 ```{r}
-ttest_all_vars(wine_sub, "quality")
+library(onewaytests)
+
+Y_bad <- as.matrix(
+            wine %>%
+            filter(quality == 0) %>%
+            select(-quality)
+          )
+
+Y_good <- as.matrix(
+            wine %>%
+            filter(quality == 1) %>%
+            select(-quality)
+          )
+
+Y_bad_bar <- colMeans(Y_bad)
+
+Y_good_bar <- colMeans(Y_good)
+
+Y_bad_cov <- cov(Y_bad)
+Y_good_cov <- cov(Y_good)
+
+n_bad <- nrow(Y_bad)
+n_good <- nrow(Y_good)
+
+```
+
+## Normality
+```{r}
+mvn(as.matrix(wine %>%
+                select(-quality)))
+```
+
+```{r}
+n1
+n2
+```
+
+```
+Multivariate Central Limit Theorem, using the fact that we have with sample sizes greater than 15.
+```
+
+## Equivalent Variances
+
+```{r}
+(det(Y_bad_cov)^((n_bad - 1)/2) * det(Y_good_cov)^((n_good - 1)/2))/det(S_p)^(n_bad + n_good - 2)
+```
+
+```
+Using the test of determinants on the covariances matrices we find that the statistic is not close to 1. So it not fair to pool the variances.
+```
+
+```{r}
+t_tests <- ttest_all_vars(wine, "quality") %>%
+            mutate(abs_diff = abs(observed.diff),
+                   increase = observed.diff < 0,
+                   significant = p.value < 0.05)
+```
+
+### Should Increase
+```{r}
+t_tests %>%
+  filter(significant & increase) %>%
+  pull(Chemical.Property)
+```
+
+### Should Decrease
+```{r}
+t_tests %>%
+  filter(significant & !increase) %>%
+  pull(Chemical.Property)
+```
+
+### Insignificant
+```{r}
+t_tests %>%
+  filter(!significant) %>%
+  pull(Chemical.Property)
 ```
 
 
