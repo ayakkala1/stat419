@@ -1,0 +1,218 @@
+---
+title: 'Lab 5: Testing Covariance Matrices and MANOVA'
+author: "Anish Yakkala"
+output:
+  html_document: default
+---
+
+```{r, include = FALSE}
+## IGNORE THIS
+knitr::opts_chunk$set(error = TRUE) 
+options(digits=3)
+library(tidyverse)
+library(heplots)  ## this one is new!
+```
+
+# The Data
+
+Today's dataset is taken from a survey of 84 Cal Poly students.  The students were asked how many speeding tickets they had received in their lives, the fastest speed they had ever driven, and the number of hours per week they spend studying.
+
+Run the code below to load the data.
+
+
+```{r}
+
+dat <- read.csv("https://www.dropbox.com/s/vb85kbwqv5o8lia/Subset%20S2010data.TXT?dl=1", sep = "")
+
+```
+
+## Checking the data ahead of time
+
+Take a look at the data, using whatever R functions you prefer.  Do you see any possible issues?  Why might these present a problem to our analyses?
+
+```
+We have missing data for gender and speed tickets
+```
+
+Modify the code below to drop the problematic rows of data.
+
+```{r}
+dat <- dat %>% filter(!is.na(SpeedTickets) & !is.na(Gender) & (Year != "G"))
+```
+
+# Box's M-Test
+
+
+Consider testing the hypothesis "Male-idenfiying students are equally as responsible as female-identifying students."
+
+Perform the appropriate test in R for this hypothesis.
+
+
+
+```{r}
+library(Hotelling)
+
+htest <- hotelling.test(cbind(StudyHours,SpeedTickets,FastDrive) ~ factor(Gender), data = dat)
+htest
+```
+
+```
+YOUR ANSWER HERE
+```
+
+The test above relied on the assumption that the covariance matrices were the same for all populations.  Express this assumption as a null hypothesis, in both symbols and words.
+
+Words:
+Null Hypothesis: The true variance matrices are the same
+Alternate Hypothesis: The true variance matrices are not the same
+
+Symbols:
+\[
+\begin{split}
+& H_{o} : \Sigma = \Sigma_{\text{pooled}} \\
+& H_{a} : \Sigma \neq \Sigma_{\text{pooled}} \\
+\end{split}
+\]
+
+Calculate the $M$ statistic for this test.  What do you expect it to be under the null?  What does the actual value suggest to you?
+
+```{r}
+boxM_results <- boxM(cbind(StudyHours,SpeedTickets,FastDrive) ~ factor(Gender), data = dat)
+boxM_results
+```
+
+```
+YOUR ANSWER HERE
+```
+
+Run the following code to perform the full hypothesis test.  What do you conclude?
+
+
+```{r}
+#install.packages("heplots")
+library(heplots)
+
+boxM(cbind(StudyHours, SpeedTickets, FastDrive) ~ factor(Year), data = dat %>%
+                                                                        filter(Year != "G"))
+
+```
+
+
+# Testing Covariance Matrices
+
+Suppose we wish further understand the relationship between max driving speed, number of speeding tickets, and hours studied.  
+
+
+## A specific null
+
+Run the following code, which will show you $\Sigma_0$, a proposed covariance matrix between these three variables.
+
+```{r}
+sigma_0 <- cbind(c(75, 0, -4), c(0, 1, 6), c(-4, 6, 366))
+sigma_0
+```
+
+Convert this covariance matrix to a correlation matrix. In plain English, what claim is being made about these three variables?
+
+
+```{r}
+Is <- sqrt(1/diag(sigma_0))
+p <- (d <- dim(sigma_0))[1L]
+r <- sigma_0
+Is * sigma_0 * rep(Is, each = p)
+```
+
+```
+There is a correlation between variables 1 and 3 and variables 2 and 4. On the other hand there is no correlation between variable 1 and 2.
+```
+
+Using R (not by hand!) calculate a test statistic for testing a null hypothesis of $H_0: \Sigma = \Sigma_0$. What does this suggest to you?
+
+```{r}
+response_vars <- dat %>%
+                dplyr::select(StudyHours,SpeedTickets,FastDrive)
+
+det(cov(response_vars))/det(sigma_0)
+```
+
+```
+Since the ratio is very close to 1 there is not enough evidence to reject the null
+```
+
+
+## Independence
+
+Is it reasonable to think that there is a no relationship between the hours studied, speeding tickets, and driving fast?  Calculate an appropriate test statistic and make an argument to address this question.
+
+
+```{r}
+det(cov(response_vars))/prod(diag(cov(response_vars)))
+```
+
+```
+Since the ratio is very close to 1 there is not enough evidence to reject the null.
+```
+
+
+## Subvectors
+
+Is it reasonable to think that hours of study is independent of erratic driving (speeding tickets and fast driving)?  Calculate an appropriate test statistic and make an argument to address this question.
+
+```{r}
+
+
+
+```
+
+```
+YOUR ANSWER HERE
+```
+
+
+
+# One-Way MANOVA
+
+Consider the following statement:
+
+"Cal Poly students are equally responsible - as measured by their driving speed, speeding tickets, and study hours - in every year of schooling."
+
+First, use and duplicate the following code to look at the data.  Do the plots seem to support this statement?
+
+```{r}
+ggplot(dat, aes(x = Year, y = StudyHours, fill = Year)) + geom_boxplot()
+```
+
+Next, perform an appropriate test to address the statement.  Make sure to state your null and alternate hypothesis, and to perform an appropriate adjustment of the data before using the `manova()` function in R.
+
+```{r}
+### YOUR CODE HERE###
+```
+
+```
+YOUR ANSWER HERE
+```
+
+
+
+# Two-Way MANOVA
+
+Now consider a different statement:
+
+"Cal Poly students are equally responsible - as measured by their driving speed, speeding tickets, and study hours - in every year of schooling. Furthermore, male and female identifying students are also equally responsible, in terms of those three measurements."
+
+Perform appropriate test(s) to address this statement.
+
+```{r}
+### YOUR CODE HERE###
+```
+
+```
+YOUR ANSWER HERE
+```
+
+What are the assumptions about the data for the test you performed?
+
+
+```
+YOUR ANSWER HERE
+```

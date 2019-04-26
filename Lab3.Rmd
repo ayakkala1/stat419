@@ -2,8 +2,8 @@
 title: 'Lab 3: Testing Mean Vectors'
 author: "Anish Yakkala"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r, include = FALSE}
@@ -356,38 +356,11 @@ ttest_all_vars <- function(data, response){
   res <- res %>% select(Chemical.Property, observed.diff, t.score, p.value)
   
   return(res)
-  
 }
 
 
 ```
 
-```{r}
-library(onewaytests)
-
-Y_bad <- as.matrix(
-            wine %>%
-            filter(quality == 0) %>%
-            select(-quality)
-          )
-
-Y_good <- as.matrix(
-            wine %>%
-            filter(quality == 1) %>%
-            select(-quality)
-          )
-
-Y_bad_bar <- colMeans(Y_bad)
-
-Y_good_bar <- colMeans(Y_good)
-
-Y_bad_cov <- cov(Y_bad)
-Y_good_cov <- cov(Y_good)
-
-n_bad <- nrow(Y_bad)
-n_good <- nrow(Y_good)
-
-```
 
 ## Normality
 ```{r}
@@ -396,24 +369,16 @@ mvn(as.matrix(wine %>%
 ```
 
 ```{r}
-n1
-n2
+nrow(wine)
 ```
 
 ```
-Multivariate Central Limit Theorem, using the fact that we have with sample sizes greater than 15.
+While most of the features in the Shapiro-Wilk test reject the null, there is no fear since we have the Central Limit Theorem. Our sample is greater than 30 and so we can say that the sampling distribution for each feature's mean should be approximated by a normal distribution.
 ```
+## T Tests
+## Doing wines(bad) - wines(good)
 
-## Equivalent Variances
-
-```{r}
-(det(Y_bad_cov)^((n_bad - 1)/2) * det(Y_good_cov)^((n_good - 1)/2))/det(S_p)^(n_bad + n_good - 2)
-```
-
-```
-Using the test of determinants on the covariances matrices we find that the statistic is not close to 1. So it not fair to pool the variances.
-```
-
+Using $\alpha = 0.05$ for all tests.
 ```{r}
 t_tests <- ttest_all_vars(wine, "quality") %>%
             mutate(abs_diff = abs(observed.diff),
@@ -428,12 +393,16 @@ t_tests %>%
   pull(Chemical.Property)
 ```
 
+These t tests are statistically significant as the p-values are under 0.05. Since the observation statistic is negative we can say that the mean values for that variable for the good wines is greater compared to ones for the bad wines. Note these tests do not imply that increases these variables will cause your wines to be greater.
+
 ### Should Decrease
 ```{r}
 t_tests %>%
   filter(significant & !increase) %>%
   pull(Chemical.Property)
 ```
+
+These t tests are statistically significant as the p-values are under 0.05. Since the observation statistic is positive we can say that the mean values for that variable for the good wines is less compared to ones for the bad wines. Note these tests do not imply that increases these variables will cause your wines to be worse
 
 ### Insignificant
 ```{r}
@@ -442,7 +411,7 @@ t_tests %>%
   pull(Chemical.Property)
 ```
 
-
+Since the t tests have p-values greater or equal to 0.05 we have no evidence to reject the null that the true mean value for the good wine and bad wines are the same. So we can treat them as insignificant towards are efforts to making a better wine.
 
 
 

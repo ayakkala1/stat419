@@ -1,0 +1,83 @@
+---
+title: "Sharks_EC"
+author: Anish Yakkala
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(Hotelling)
+library(broom)
+library(MVN)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question
+```
+By popular request...
+
+As of today (Tuesday), the San Jose Sharks and the Vegas Golden Knights have played 6 playoff hockey games so far, in a best-of-7 series.  These games have constituted 18 full periods of regular time hockey (you may ignore overtime periods).  
+
+Consider these 18 periods to be 18 independent samples from a multivariate vector: (# of goals scored by Sharks, # of goals scored by Knights).
+
+Use appropriate multivariate calculations to make prediction of who will win Game 7 tonight, and to discuss how confident you are of that prediction.  Be sure to discuss all your assumptions.
+
+Then watch Game 7 tonight and see how good your prediction was!
+```
+## Set up
+```{r}
+sharks <- c(1,3,1,3,0,0,1,0,2,0,0,0,2,1,2,1,0,0)
+knights <- c(0,1,1,3,1,1,2,2,2,2,1,2,1,0,1,0,1,0) 
+
+mean_sharks <- mean(sharks)
+mean_knights <- mean(knights)
+cov_shark_knight <- cov(cbind(sharks,knights))
+```
+
+## Normality
+```{r}
+mvn(cbind(sharks,knights))
+```
+
+At the 5% significance level we do not reject the null hypothesises of the Madia Skewness test and Mardia Kurtosis test. So we do not have enough evidence to reject the Multivariate Normality assumption. Not rejecting our assumption and holding our assumption implies that any linear combination of these variables will also be Normal.
+
+## Independent
+
+The question says to treat the samples as independent so we do not need to worry about this assumption being violated.
+
+## Randomness
+
+We do not need to worry since we are using all the games played so far in the series.
+
+## Finding the Probability that the Sharks Win
+
+
+```{r}
+design <- rbind(1,-1)
+
+mean_obs <- t(design) %*% rbind(mean_sharks,mean_knights)
+
+var <- (t(design) %*% cov_shark_knight %*% design)
+
+mean_obs
+var
+```
+
+Let's assume that the distribution of the frame differences is represented by a Normal Distribution with the mean above and std above.
+
+So $D \sim N(-0.222,1.48)$
+
+In order to find the probability that the Sharks will win, we need to find the probability that $Y > 0$ such that $Y = (D_{1} + D_{2} + D_{3})$.
+
+So $Y \sim N(-0.222 - 0.222 - 0.222,1.48 + 1.48 + 1.48)$ which is equal to $Y \sim (-0.667, 4.43)$
+
+Therefore, finding the probability that Y is greater than 0 reduces to a normal probability calculation:
+
+\[
+\begin{split}
+Y = (D_{1} + D_{2} + D_{3} > 0) & = P(Y > 0)\\
+& = P\bigg(Z > \frac{0 - (-0.667)}{\sqrt{4.43}}\bigg)\\
+& = P(Z> 0.317) = P(Z < -0.317) = 0.376
+\end{split}
+\]
+
+That is, the probability that the sum of the differences (Sharks - Knights) for 3 frames of the 2019 Sharks vs Knights game exceeds 0 (meaning the Sharks win) is 0.376.

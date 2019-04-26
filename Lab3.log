@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  16 APR 2019 17:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  16 APR 2019 19:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -791,104 +791,110 @@ Package xcolor Warning: Incompatible color definition on input line 153.
 Package xcolor Warning: Incompatible color definition on input line 153.
 
 
-Overfull \hbox (18.49356pt too wide) in paragraph at lines 212--212
+Overfull \hbox (18.49356pt too wide) in paragraph at lines 217--217
 []  \T1/lmtt/m/n/10 The inputs include objective tests (e.g. PH values) and the
  output is based on sensory data[] 
  []
 
 
-Overfull \hbox (23.74355pt too wide) in paragraph at lines 212--212
+Overfull \hbox (23.74355pt too wide) in paragraph at lines 217--217
 []  \T1/lmtt/m/n/10 (median of at least 3 evaluations made by wine experts). Ea
 ch expert graded the wine quality[] 
  []
 
 
-Overfull \hbox (65.74342pt too wide) in paragraph at lines 212--212
+Overfull \hbox (65.74342pt too wide) in paragraph at lines 217--217
 []   \T1/lmtt/m/n/10 1 - fixed acidity: most acids involved with wine or fixed 
 or nonvolatile (do not evaporate readily)[] 
  []
 
 
-Overfull \hbox (202.24303pt too wide) in paragraph at lines 212--212
+Overfull \hbox (202.24303pt too wide) in paragraph at lines 217--217
 []   \T1/lmtt/m/n/10 2 - volatile acidity: the amount of acetic acid in wine, w
 hich at too high of levels can lead to an unpleasant, vinegar taste[] 
  []
 
-LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 212
+LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 217
 .
 (/usr/local/texlive/2018/texmf-dist/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-Overfull \hbox (44.74348pt too wide) in paragraph at lines 212--212
+Overfull \hbox (44.74348pt too wide) in paragraph at lines 217--217
 []   \T1/lmtt/m/n/10 3 - citric acid: found in small quantities, citric acid ca
 n add \TS1/lmtt/m/n/10 '\T1/lmtt/m/n/10 freshness\TS1/lmtt/m/n/10 ' \T1/lmtt/m/
 n/10 and flavor to wines[] 
  []
 
 
-Overfull \hbox (548.74202pt too wide) in paragraph at lines 212--212
+Overfull \hbox (91.99335pt too wide) in paragraph at lines 217--217
 []   \T1/lmtt/m/n/10 4 - residual sugar: the amount of sugar remaining after fe
 rmentation stops, it\TS1/lmtt/m/n/10 '\T1/lmtt/m/n/10 s rare to find wines with
- less than 1 gram/liter and wines with greater than 45 grams/liter are consider
-ed sweet[] 
+[] 
  []
 
 
-Overfull \hbox (511.99213pt too wide) in paragraph at lines 212--212
+Overfull \hbox (18.49356pt too wide) in paragraph at lines 217--217
+[]       \T1/lmtt/m/n/10 less than 1 gram/liter and wines with greater than 45 
+grams/liter are considered sweet[] 
+ []
+
+
+Overfull \hbox (123.49326pt too wide) in paragraph at lines 217--217
 []   \T1/lmtt/m/n/10 6 - free sulfur dioxide: the free form of SO2 exists in eq
-uilibrium between molecular SO2 (as a dissolved gas) and bisulfite ion; it prev
-ents microbial growth and the oxidation of wine[] 
- []
-
-
-Overfull \hbox (685.24162pt too wide) in paragraph at lines 212--212
-[]   \T1/lmtt/m/n/10 7 - total sulfur dioxide: amount of free and bound forms o
-f S02; in low concentrations, SO2 is mostly undetectable in wine, but at free S
-O2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of win
-e[] 
+uilibrium between molecular SO2 (as a dissolved gas)[] 
  []
 
 [1
 
 {/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (123.49326pt too wide) in paragraph at lines 212--212
+Overfull \hbox (2.7436pt too wide) in paragraph at lines 217--217
+[]   \T1/lmtt/m/n/10 7 - total sulfur dioxide: amount of free and bound forms o
+f S02; in low concentrations,[] 
+ []
+
+
+Overfull \hbox (244.2429pt too wide) in paragraph at lines 217--217
+[]       \T1/lmtt/m/n/10 SO2 is mostly undetectable in wine, but at free SO2 co
+ncentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine[] 
+ []
+
+
+Overfull \hbox (123.49326pt too wide) in paragraph at lines 217--217
 []   \T1/lmtt/m/n/10 8 - density: the density of water is close to that of wate
 r depending on the percent alcohol and sugar content[] 
  []
 
 
-Overfull \hbox (291.49277pt too wide) in paragraph at lines 212--212
+Overfull \hbox (65.74342pt too wide) in paragraph at lines 217--217
 []   \T1/lmtt/m/n/10 9 - pH: describes how acidic or basic a wine is on a scale
- from 0 (very acidic) to 14 (very basic); most wines are between 3-4 on the pH 
-scale[] 
+ from 0 (very acidic) to 14 (very basic);[] 
  []
 
 
-Overfull \hbox (249.49289pt too wide) in paragraph at lines 212--212
+Overfull \hbox (7.99359pt too wide) in paragraph at lines 217--217
 []   \T1/lmtt/m/n/10 10 - sulphates: a wine additive which can contribute to su
-lfur dioxide gas (S02) levels, wich acts as an antimicrobial and antioxidant[] 
-
+lfur dioxide gas (S02) levels,[] 
  []
 
 
-Package xcolor Warning: Incompatible color definition on input line 239.
-
-
-Package xcolor Warning: Incompatible color definition on input line 247.
-
-
-Package xcolor Warning: Incompatible color definition on input line 247.
+Package xcolor Warning: Incompatible color definition on input line 244.
 
 
 Package xcolor Warning: Incompatible color definition on input line 252.
 
 
-Package xcolor Warning: Incompatible color definition on input line 256.
+Package xcolor Warning: Incompatible color definition on input line 252.
 
 
-Package xcolor Warning: Incompatible color definition on input line 256.
+Package xcolor Warning: Incompatible color definition on input line 257.
 
-<Lab3_files/figure-latex/unnamed-chunk-4-1.pdf, id=44, 279.0425pt x 277.035pt>
+
+Package xcolor Warning: Incompatible color definition on input line 261.
+
+
+Package xcolor Warning: Incompatible color definition on input line 261.
+
+<Lab3_files/figure-latex/unnamed-chunk-4-1.pdf, id=64, 279.0425pt x 277.035pt>
 File: Lab3_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pdf)
 <use Lab3_files/figure-latex/unnamed-chunk-4-1.pdf>
 Package pdftex.def Info: Lab3_files/figure-latex/unnamed-chunk-4-1.pdf  used on
@@ -909,7 +915,7 @@ Package xcolor Warning: Incompatible color definition on input line 283.
 
 Package xcolor Warning: Incompatible color definition on input line 283.
 
-<Lab3_files/figure-latex/unnamed-chunk-5-1.pdf, id=54, 279.0425pt x 277.035pt>
+<Lab3_files/figure-latex/unnamed-chunk-5-1.pdf, id=74, 279.0425pt x 277.035pt>
 File: Lab3_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
 <use Lab3_files/figure-latex/unnamed-chunk-5-1.pdf>
 Package pdftex.def Info: Lab3_files/figure-latex/unnamed-chunk-5-1.pdf  used on
@@ -925,7 +931,7 @@ Package xcolor Warning: Incompatible color definition on input line 291.
 
 Package xcolor Warning: Incompatible color definition on input line 291.
 
-<Lab3_files/figure-latex/unnamed-chunk-5-2.pdf, id=67, 279.0425pt x 277.035pt>
+<Lab3_files/figure-latex/unnamed-chunk-5-2.pdf, id=87, 279.0425pt x 277.035pt>
 File: Lab3_files/figure-latex/unnamed-chunk-5-2.pdf Graphic file (type pdf)
 <use Lab3_files/figure-latex/unnamed-chunk-5-2.pdf>
 Package pdftex.def Info: Lab3_files/figure-latex/unnamed-chunk-5-2.pdf  used on
@@ -1015,16 +1021,16 @@ Package xcolor Warning: Incompatible color definition on input line 382.
 
 [5]
 
-Package xcolor Warning: Incompatible color definition on input line 415.
+Package xcolor Warning: Incompatible color definition on input line 410.
 
 
-Package xcolor Warning: Incompatible color definition on input line 445.
+Package xcolor Warning: Incompatible color definition on input line 440.
 
 
-Package xcolor Warning: Incompatible color definition on input line 445.
+Package xcolor Warning: Incompatible color definition on input line 440.
 
 
-Overfull \hbox (275.74281pt too wide) in paragraph at lines 456--456
+Overfull \hbox (275.74281pt too wide) in paragraph at lines 451--451
 []\T1/lmtt/m/n/10 Using the test of determinants on the covariances matrices we
  find that the statistic is not close to 1. So it not fair to pool the variance
 s.[] 
@@ -1032,50 +1038,50 @@ s.[]
 
 [6]
 
-Package xcolor Warning: Incompatible color definition on input line 463.
+Package xcolor Warning: Incompatible color definition on input line 458.
 
 
-Package xcolor Warning: Incompatible color definition on input line 472.
+Package xcolor Warning: Incompatible color definition on input line 467.
 
 
-Package xcolor Warning: Incompatible color definition on input line 472.
+Package xcolor Warning: Incompatible color definition on input line 467.
 
 
-Overfull \hbox (44.74348pt too wide) in paragraph at lines 479--479
+Overfull \hbox (44.74348pt too wide) in paragraph at lines 474--474
 []\T1/lmtt/m/n/10 Multivariate Central Limit Theorem, using the fact that we ha
-ve with sample sizes greater than 30.[] 
+ve with sample sizes greater than 15.[] 
  []
 
 
-Package xcolor Warning: Incompatible color definition on input line 484.
+Package xcolor Warning: Incompatible color definition on input line 479.
 
 
-Package xcolor Warning: Incompatible color definition on input line 492.
+Package xcolor Warning: Incompatible color definition on input line 487.
 
 
-Package xcolor Warning: Incompatible color definition on input line 492.
+Package xcolor Warning: Incompatible color definition on input line 487.
 
 
-Package xcolor Warning: Incompatible color definition on input line 534.
+Package xcolor Warning: Incompatible color definition on input line 529.
 
 
-Package xcolor Warning: Incompatible color definition on input line 538.
+Package xcolor Warning: Incompatible color definition on input line 533.
 
 
-Package xcolor Warning: Incompatible color definition on input line 538.
+Package xcolor Warning: Incompatible color definition on input line 533.
 
 [7]
 
-Package xcolor Warning: Incompatible color definition on input line 554.
+Package xcolor Warning: Incompatible color definition on input line 544.
 
 
-Package xcolor Warning: Incompatible color definition on input line 558.
+Package xcolor Warning: Incompatible color definition on input line 548.
 
 
-Package xcolor Warning: Incompatible color definition on input line 558.
+Package xcolor Warning: Incompatible color definition on input line 548.
 
 
-Overfull \hbox (779.74135pt too wide) in paragraph at lines 578--578
+Overfull \hbox (779.74135pt too wide) in paragraph at lines 563--563
 []\T1/lmtt/m/n/10 That we cannot reject the null hypothesis that the mean resid
 ual sugar for good and bad wines are the same, and that we can reject the null 
 hypothesis that the mean pH for good and bad wines are the same. All at the 5% 
@@ -1083,55 +1089,101 @@ significance level.[]
  []
 
 
-Overfull \hbox (464.74226pt too wide) in paragraph at lines 586--586
+Overfull \hbox (464.74226pt too wide) in paragraph at lines 571--571
 []\T1/lmtt/m/n/10 The seperate t-tests do not take into account the relationshi
 p between pH and residual.sugar. This is what is being done in the Hotelling T 
 Squared test by using the covariances.[] 
  []
 
 
-Package xcolor Warning: Incompatible color definition on input line 614.
+Package xcolor Warning: Incompatible color definition on input line 599.
 
 
-Package xcolor Warning: Incompatible color definition on input line 634.
+Package xcolor Warning: Incompatible color definition on input line 618.
 
 
-Package xcolor Warning: Incompatible color definition on input line 634.
+Package xcolor Warning: Incompatible color definition on input line 618.
 
 
-Package xcolor Warning: Incompatible color definition on input line 634.
+Package xcolor Warning: Incompatible color definition on input line 623.
 
 [8]
 
-Package xcolor Warning: Incompatible color definition on input line 634.
+Package xcolor Warning: Incompatible color definition on input line 628.
 
 
-Package xcolor Warning: Incompatible color definition on input line 634.
+Package xcolor Warning: Incompatible color definition on input line 628.
 
 
-Package xcolor Warning: Incompatible color definition on input line 636.
+Package xcolor Warning: Incompatible color definition on input line 678.
 
 
-Package xcolor Warning: Incompatible color definition on input line 640.
+Package xcolor Warning: Incompatible color definition on input line 682.
 
 
-Package xcolor Warning: Incompatible color definition on input line 640.
+Package xcolor Warning: Incompatible color definition on input line 682.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 660.
+
+Overfull \hbox (989.74074pt too wide) in paragraph at lines 690--690
+[]\T1/lmtt/m/n/10 While most of the features in the Shapiro-Wilk test reject th
+e null, there is no fear since we have the Central Limit Theorem. Our sample is
+ greater than 30 and so we can say that the sampling distribution for each feat
+ure\TS1/lmtt/m/n/10 '\T1/lmtt/m/n/10 s mean should be approximated by a normal 
+distribution.[] 
+ []
+
 [9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 660.
+
+Package xcolor Warning: Incompatible color definition on input line 695.
+
+
+Package xcolor Warning: Incompatible color definition on input line 702.
+
+
+Package xcolor Warning: Incompatible color definition on input line 702.
+
+
+Package xcolor Warning: Incompatible color definition on input line 707.
+
+
+Package xcolor Warning: Incompatible color definition on input line 713.
+
+
+Package xcolor Warning: Incompatible color definition on input line 713.
+
+
+Package xcolor Warning: Incompatible color definition on input line 722.
+
+
+Package xcolor Warning: Incompatible color definition on input line 728.
+
+
+Package xcolor Warning: Incompatible color definition on input line 728.
+
+
+Package xcolor Warning: Incompatible color definition on input line 738.
+
+
+Package xcolor Warning: Incompatible color definition on input line 744.
+
+
+Package xcolor Warning: Incompatible color definition on input line 744.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 752.
+[10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 752.
 (./Lab3.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 660.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 660.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 752.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 752.
 Package rerunfilecheck Info: File `Lab3.out' has not changed.
-(rerunfilecheck)             Checksum: 19CC2ABDB46800CF3EE69758A7005851;1240.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 660.
+(rerunfilecheck)             Checksum: AC404BBB653019BC5F88978E8558C57D;1820.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 752.
  ) 
 Here is how much of TeX's memory you used:
- 14432 strings out of 492649
- 210175 string characters out of 6129622
- 332538 words of memory out of 5000000
- 18009 multiletter control sequences out of 15000+600000
+ 14452 strings out of 492649
+ 210409 string characters out of 6129622
+ 336722 words of memory out of 5000000
+ 18018 multiletter control sequences out of 15000+600000
  55603 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  34i,17n,38p,525b,457s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1151,10 +1203,10 @@ pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/
 local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></usr/local/texl
 ive/2018/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/2018/t
 exmf-dist/fonts/type1/public/lm/lmtti10.pfb>
-Output written on Lab3.pdf (9 pages, 302729 bytes).
+Output written on Lab3.pdf (10 pages, 307488 bytes).
 PDF statistics:
- 173 PDF objects out of 1000 (max. 8388607)
- 138 compressed objects within 2 object streams
- 24 named destinations out of 1000 (max. 500000)
- 10312 words of extra memory for PDF output out of 12000 (max. 10000000)
+ 204 PDF objects out of 1000 (max. 8388607)
+ 168 compressed objects within 2 object streams
+ 35 named destinations out of 1000 (max. 500000)
+ 10352 words of extra memory for PDF output out of 12000 (max. 10000000)
 
