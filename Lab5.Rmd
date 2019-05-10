@@ -1,0 +1,476 @@
+---
+title: 'DA 5: Profile Analysis'
+author: "Anish Yakkala"
+output:
+  html_document: default
+---
+
+```{r message=FALSE, warning=FALSE}
+## IGNORE THIS
+options(digits=3)
+#knitr::opts_chunk$set(fig.width=4, fig.height=4) 
+#install.packages("tidyverse")
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(Hotelling)
+```
+
+# The Data
+
+Our dataset in this lab concerns the popularity of names for babies in the United States since 1996.  You can also download the datasets you need individually from  https://www.dropbox.com/sh/czm61yzmvzl6xfb/AABEFdpy02aNRhZ_vcxrVAQSa?dl=0
+
+The data is very large, so it has been split by the first letter of the names.  We will begin by examining my name - then you will be able to look at your own!
+
+To load the file for "K" names into R, you will need to find the *path*; that is, the series of folders it is stored in.  Most likely, this looks something like:
+
+```
+/Users/yourname/Documents/Stat_419_Labs/BabyNames/StateNames_K.csv
+```
+
+You can left-click the file, and select "Get Info" (Mac) or "Get Properties" (PC) to find the exact path, if you are unsure.
+
+The following code loads the data (from my own path) and narrows it down to only the name "Kelly".  For convenience, we will look only at female babies named Kelly for now.  
+
+```{r}
+my_path = "BabyNames/"
+
+knames <- read.csv(paste(my_path, "StateNames_K.csv", sep = ""))
+
+kellys <- knames %>% 
+  filter(Name == "Kelly", Gender == "F") %>% 
+  select(-Gender)
+
+summary(knames)
+```
+
+Edit the code above as needed, so that you have downloaded the "K Names" dataset and loaded it from your own path.  
+
+What variables are in the dataset `knames`?  What do these measure?
+
+```
+Name - Names of babies in the U.S since 1996 that start with the letter "K"
+Year - Specific year in which the count of that name is given
+Gender - Specific gender in which the count of that name is given
+State - Specific state in which the count of that name is given
+Count - Count of a specific name of a specified Gender in a specified State
+```
+
+***
+
+# Question I: Is my name not cool any more?
+
+Let's take a look at how the name "Kelly" has changed over time since 1996.    The following code will plot the total counts (added up for each state) for each year.
+
+```{r}
+# Plot Kelly count over time
+kellys_by_year <- kellys %>%
+  group_by(Year) %>% 
+  summarise(Total = sum(Count))
+
+ggplot(kellys_by_year, aes(x = Year, y = Total)) + geom_line()
+
+```
+
+One approach to analyzing this data would be to run a linear regression over time, and see if the slope is negative.  Use the function `lm()` to do a simple linear regression of Total Count versus Year.
+
+```{r}
+my_model <- lm(Total ~ Year, data = kellys_by_year)
+summary(my_model)
+```
+
+What do you conclude from this model?
+
+```
+By the F test we can conclude the relationship assumed in the model (that it is linear) is not reasonable, that there is a lack of fit
+
+By the individual t-test for the Year slope coefficient we can conlude that there is a linear association between Year and Count.
+```
+
+We now also have the tool of Profile Analysis.  Here, we will treat each year as a separate element of a large multivariate random variable.  In each year, we have 51 observations: one from each state (plus Washington DC).  We will consider the states to be independent samples.
+
+On a separate piece of paper, write down the null and alternate hypothesis for testing "flatness"; that is, for checking whether the name "Kelly" has changed in popularity over time since 1996.  Be sure to specify the form of your $C$ matrix.
+
+Now edit and run the following code to calculate the T^2 value for a Profile Analysis Hotelling's T-test. Note that our first step is to transform the data so that the years - which we are treating as variables - are columns. *(Transforming datasets is not part of this class - I will supply you the code - but it is a useful skill to have!)*
+
+```{r}
+
+kellys_long <- kellys %>% spread(Year, Count, fill = 0)
+
+kellys_mat = as.matrix(kellys_long[, -c(1:2)])
+
+c1 <- diag(17)
+c2 <- -diag(17)
+C <- cbind(c1, rep(0, 17)) + cbind(rep(0, 17), c2)
+
+Y <- t(C %*% t(kellys_mat))
+
+y_bar <- C %*% as.matrix(colMeans(kellys_mat))
+
+S_Y <- C %*% cov(kellys_mat) %*% t(C)
+
+
+T2 <- t(y_bar) %*% solve(S_Y/nrow(kellys_mat)) %*% y_bar
+
+```
+
+
+As usual, we will let R do the hard work for us!  Install the package "profileR", and run the code below.
+
+
+```{r message=FALSE, warning=FALSE}
+#install.packages("profileR")
+library(profileR)
+
+paos(kellys_long[, -c(1:2)], scale = FALSE)
+
+```
+
+Which test matches the one you did by hand?
+
+```
+The test that matches the one we did is the one with the null hypothesis that the Ratios of the means over Mu0 = 1.
+```
+
+What do you think the other test is checking for?
+
+```
+The other test is checking for if the name Kelly changes in popularity by a constant amount (linearly) over time.
+```
+
+Did the name "Kelly" change in popularity over time?  How do you know?
+
+```
+At a significance level of 0.05 we can conclude that the popularity over time of the name "Kelly" does change over time, since the p-value of the Parallelism test in the profile analysis is less than 0.05.
+```
+
+Did the name "Kelly" change in popularity at a *constant rate* (i.e. linearly) over time?  How do you know?
+
+```
+At a significance level of 0.05 we can conclude that the popularity over time of the name "Kelly" does not change at a constant rate (linearly), since the p-value of the second test in the profile analysis is less than 0.05.
+```
+
+
+***
+
+Now we will compare my name to the name "Hunter" (as in, Dr. Hunter Glanz, R whiz and professor extraordinaire).
+
+Run the following code to load the counts for Hunter and plot them.
+
+```{r}
+hnames <- read.csv(paste(my_path, "StateNames_H.csv", sep = ""))
+
+hunters <- hnames %>% filter(Name == "Hunter", Gender == "M") %>% select(-Gender)
+
+hk <- rbind(kellys, hunters) %>% mutate(Name = factor(Name))
+
+hk_by_year <-  hk %>% 
+  group_by(Year, Name) %>% 
+  summarise(Total = sum(Count)) 
+
+ggplot(hk_by_year, aes(x = Year, y = Total, color = Name)) + geom_line()
+
+```
+
+Comment on these profile plots.  Which name is more popular?  Are the names changing in popularity?  Are they changing at the same rate?
+
+```
+It appears that the name Hunter is more popular, that the names are changing in popularity, and that they are not changing at the same rate.
+```
+
+Now use `pbg()`, which stands for "profile by group", to do three profile analysis tests comparing the names "Hunter" and "Kelly".
+
+```{r}
+
+hk_long <- hk %>% spread(Year, Count, fill = 0)
+
+my_prof <- pbg(hk_long[, -c(1:2)], group = hk_long$Name)
+summary(my_prof)
+
+```
+
+
+What can you conclude about the names "Hunter" and "Kelly", and how they haved changed over time since 1996?  Be specific; cite your tests!
+
+```
+At the 5% significance level we can conclude that the names "Hunter" and "Kelly" are not changing at at the same rate using the Parallelism test in the Profile by Group, which checks for parallelism, since the p-value is less than 0.05.
+
+Since we can't assume parallism the rest will obviously be rejected. Since we know if they are not parallel it can't be that they have equal levels and that it also can't be that they both are flat.
+```
+
+***
+# Question 2: Do these names have the same popularity in every year?
+
+My brother Gregory is 2 years younger than me, and my cousin Erica is 5 years older than me.  All of our names are going out of popularity quickly, as shown by the following plot:
+
+```{r}
+gnames <- read.csv(paste(my_path, "StateNames_G.csv", sep = ""))
+enames <- read.csv(paste(my_path, "StateNames_E.csv", sep = ""))
+
+gregs <- gnames %>% filter(Name == "Gregory", Gender == "M") %>% select(-Gender)
+ericas <- enames %>% filter(Name == "Erica", Gender == "F") %>% select(-Gender)
+
+family <- rbind(kellys, gregs, ericas)
+
+fam_by_year <-  family %>% 
+  group_by(Year, Name) %>% 
+  summarise(Total = sum(Count)) 
+
+ggplot(fam_by_year, aes(x = Year, y = Total, color = Name)) + geom_line()
+
+```
+
+Suppose I am interested in whether our three names have equal popularity.  Naively, I decide to treat each year as an independent observation.  Why is this not a realistic assumption?
+
+```
+They are not independent because the count of a name in a certain year can be dependent on the count of a name in the previous year.
+```
+
+I proceed to perform an ordinary one-sample ANOVA test to see if our names have the same popularity in the 1996-2016 range.  
+
+Write down the model that is used for this test.  Briefly explain what each symbol represents in terms of the data.  (It is okay to write, e.g., mu_ij instead of figuring out how to use symbols.  As long as I can read it!)
+
+$\mathbb{E}(y) = \mu + \tau_{i}$
+
+Where 
+\[
+\begin{split}
+& y = \text{Average popularity of Name} \\
+& \mu = \text{grand mean} \\
+& \tau_{i} = \text{Treatment effect of being in group i (Kelly,Gregory,Erika)}
+\end{split}
+\]
+
+Now run the test:
+
+```{r}
+anova(lm(Count ~ Name, data = family))
+```
+
+Explain the degrees of freedom for "Name" and "Residuals".
+
+```
+The degrees of freedom for "Name" is also the degrees of freedom for the SSR, which is the number of groups - 1.
+
+The degrees of freedom for "Residuals" is also the degrees of freedom for the SSE, which is the n(amount of obs) - p(number of groups)
+```
+
+Report the results, including the null and alternate hypotheses, the test statistic, and the p-value.  What do you conclude?
+
+Hypothesis:
+
+\[
+\begin{split}
+& H_{o} : \mu_{\text{Kelly}} = \mu_{\text{Gregory}} = \mu_{\text{Erika}} \\
+& \text{At least one mean is not equal to another} \\
+& \alpha = 0.05
+\end{split}
+\]
+
+Conclusion:
+
+At the 5% significance level we can not reject the null hypothesis that the average popularity of names for Kelly,Gregory, and Erika are all the same, since the test statisic for the test is 2.02 (df1 = 2, df2 = 2293) which leads to a p-value of 0.13 which is greater than 0.05.
+
+***
+Now I decide to be a good multivariate statistician, and to take into account correlation across years.  For this, I will perform a MANOVA test.
+
+What are the null and alternate hypotheses for the MANOVA test to see if our names have been equally popular across all years 1996-2016?
+
+\[
+\begin{split}
+& H_{o}: \vec{\mu_{\text{Kelly}}} = \vec{\mu_{\text{Gregory}}} = \vec{\mu_{\text{Erika}}} \\
+& H_{a} : \text{At least one mean vector is not the same as another} 
+\end{split}
+\]
+
+Write down the model that is used in this test. Briefly explain what each symbol represents in terms of the data.
+
+\[
+\mathbb{E}(\vec{y}) = \vec{\mu} + \vec{\tau_{i}}
+\]
+
+Where 
+\[
+\begin{split}
+& \vec{y} = \text{Average popularity of Name for years 1997-2014} \\
+& \vec{\mu} = \text{Grand Mean Vector} \\
+& \vec{\tau_{i}} = \text{Treatment effect of being in group i (Kelly,Gregory,Erika)}
+\end{split}
+\]
+
+Note that each vector has dimension $18 \times 1$. Each row represents a year 1997-2014. 
+
+Let's now run the manova test.
+
+```{r}
+fam_long <- family %>% spread(key = Year, value = Count)
+
+fit <- manova(as.matrix(fam_long[, -c(1:2)]) ~ fam_long$Name)
+summary(fit, test = "Wilks")
+```
+
+Explain the degrees of freedom for "Name" and "Residuals".
+
+```
+The degrees of freedom for "Name" is also the degrees of freedom for the SSR, which is the number of groups - 1.
+
+The degrees of freedom for "Residuals" is also the degrees of freedom for the SSE, which is the n(amount of total obs) - g(number of missing obs) - p(number of groups)
+```
+
+What do you conclude about the names "Kelly", "Gregory", and "Erica"?
+
+```
+At least one of the names in "Kelly", "Gregory", and "Erika" is not equally popular across all years 1996-2016 as another.
+```
+
+Now check the individual ANOVA tests for each year:
+
+```{r}
+summary.aov(fit)
+```
+
+What did you learn from these tests?  How might this information explain your results from the univariate ANOVA test that disregarded correlation between years?
+
+```
+None of the years themselves yield significant p-values. It explains that the years are correlated with each other.
+```
+
+Finally, run the code below to replicate the analysis in Question 1, performing profile analysis on the names "Kelly", "Greg", and "Erica".  What do you conclude?
+
+```{r}
+fam_long <- family %>% spread(Year, Count, fill = 0)
+
+my_prof <- pbg(fam_long[, -c(1:2)], group = factor(fam_long$Name))
+summary(my_prof)
+```
+
+```
+At the 5% significance level we can conclude that the names "Gregory", "Kelly", and "Erika" are not changing at at the same rate using the Parallelism test in the Profile by Group, which checks for parallelism, since the p-value is less than 0.05.
+
+Since we can't assume parallism the rest will obviously be rejected. Since we know if they are not parallel it can't be that they have equal levels and that it also can't be that they all are flat.
+```
+***
+# YOUR TURN
+
+Using the baby names data, do an analysis of your choice.  See if you can find some interesting insight into the popularity of certain names!
+
+You should include at least one profile analysis test, and at least one MANOVA test. Use R to perform the tests; you do not need to calculate test statistics by hand.  You should, however, report the results in full - including the hypotheses, test statistic, p-value, and conclusion - not just supply R output.
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(data.table)
+```
+
+```{r message=FALSE, warning=FALSE}
+files <- paste(my_path,"StateNames_", LETTERS,".csv", sep="")
+datas <- list()
+counter = 1
+for (i in files){
+  datas[[counter]] <- read_csv(i)
+  counter <- counter + 1
+}
+
+df <- as.tibble(rbindlist(datas))
+```
+
+
+```{r}
+religious_names <- df %>%
+  filter((Name == "Jacob" & Gender == "M") | (Name == "Rachel" & Gender == "F"))
+
+religion_by_year <- religious_names %>%
+  group_by(Year, Name) %>% 
+  summarise(Total = sum(Count)) 
+
+ggplot(religion_by_year, aes(x = Year, y = Total, color = Name)) + geom_line()
+```
+
+## MANOVA
+
+### Hypothesis
+\[
+\begin{split}
+& H_{o}: \vec{\mu_{\text{Jacob}}} = \vec{\mu_{\text{Rachel}}} \\
+& H_{a} : \text{The mean vectors are not the same.} 
+\end{split}
+\]
+
+### Model
+
+The model that used in this test is ...
+
+\[
+\mathbb{E}(\vec{y}) = \vec{\mu} + \vec{\tau_{i}}
+\]
+
+Where ...
+
+\[
+\begin{split}
+& \vec{y} = \text{Average popularity of Name for years 1997-2014} \\
+& \vec{\mu} = \text{Grand Mean Vector} \\
+& \vec{\tau_{i}} = \text{Treatment effect of being in group i (Jacob,Rachel)}
+\end{split}
+\]
+
+Note that each vector has dimension $18 \times 1$. Each row represents a year 1997-2014. 
+
+### Test
+
+```{r}
+religious_long <- religious_names %>%
+                    select(-Gender) %>%
+                    spread(key = Year, value = Count)
+
+fit <- manova(as.matrix(religious_long[, -c(1:2)]) ~ religious_long$Name)
+summary(fit, test = "Wilks")
+```
+
+At the 5% significance reject the null hypothesis that the average amount of boys named Jacob is the same as the average amount of girls named Rachel for every year in 1997-2014, justified since the p-value for the MANOVA test is less than 0.05.
+
+## Profile Analysis by Group
+
+## Hypothesis
+
+Parallelism:
+
+\[
+\begin{split}
+& H_{o} : C\vec{\mu_{\text{Jacob}}} = C\vec{\mu_{\text{Rachel}}} \\ 
+& H_{a} : C\vec{\mu_{\text{Jacob}}} \neq C\vec{\mu_{\text{Rachel}}} \\ \\
+& \alpha = 0.05/3  = 0.0167
+\end{split}
+\]
+
+Equal Levels:
+
+\[
+\begin{split}
+& H_{o} : \vec{\mu_{\text{Jacob}}} = \vec{\mu_{\text{Rachel}}} \\ 
+& H_{a} : \vec{\mu_{\text{Jacob}}} \neq \vec{\mu_{\text{Rachel}}} \\ \\
+& \alpha = 0.05/3  = 0.0167
+\end{split}
+\]
+
+Flatness:
+
+\[
+\begin{split}
+& H_{o} : C\vec{\mu_{\text{Jacob}}} = C\vec{\mu_{\text{Rachel}}} = 0 \\ 
+& H_{a} : C\vec{\mu_{\text{Jacob}}} \neq 0 \lor C\vec{\mu_{\text{Rachel}}} \neq 0  \\ \\
+& \alpha = 0.05/3  = 0.0167
+\end{split}
+\]
+
+```{r}
+religious_long <- religious_names %>% 
+                    select(-Gender) %>%
+                    spread(Year, Count, fill = 0)
+
+religious_prof <- pbg(religious_long[, -c(1:2)], group = factor(religious_long$Name))
+summary(religious_prof)
+```
+
+At the 5% significance level we can conclude that the amount of boys named "Jacob" and amount of girls named "Rachel" are not changing at at the same rate by using the Prallelism test in the Profile by Group, which checks for parallelism, since the p-value is less than 0.05.
+
+Since we can't assume parallism the rest will obviously be rejected. Since we know if they are not parallel it can't be that they have equal levels and that it also can't be that they both are flat.

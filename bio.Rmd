@@ -1,0 +1,98 @@
+---
+title: "Bio"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+## Question 1
+
+```{r message=FALSE, warning=FALSE}
+data("Titanic")
+Titanic <- as.tibble(Titanic)
+
+Titanic %>%
+  filter(Sex == "Female", Class == "Crew") %>%
+  nrow()
+```
+
+## Question 2
+```{r message=FALSE, warning=FALSE}
+data("ToothGrowth")
+Tooth <- as.tibble(ToothGrowth)
+
+Tooth %>%
+  mutate(dose = as.factor(dose)) %>%
+  ggplot(aes(x=dose,y=len, fill = supp)) + geom_boxplot() +
+  xlab("Dose") + ylab("Length") + ggtitle("Length by Dose Factored by Supplement")
+```
+
+## Question 3
+```{r}
+data("mtcars")
+
+mtcars <- as.tibble(mtcars)
+
+mean(mtcars$mpg)
+
+mtcars %>%
+  ggplot(aes(x=wt,y=mpg,size=cyl)) + geom_point() + geom_smooth(method = "lm", se = FALSE) +
+  xlab("Weight of Car") + ylab("Miles Per Gallon") + ggtitle("MPG by Weight")
+```
+
+## Question 4
+```{r}
+data("InsectSprays")
+
+insect <- as.tibble(InsectSprays)
+
+insect %>%
+  mutate(spray = fct_reorder(spray,count)) %>%
+  ggplot(aes(x=spray,y=count, fill = spray)) + geom_col() + coord_flip() + guides(fill=FALSE) +
+  xlab("Spray") + ylab("Bugs Killed") + ggtitle("Number of Bugs Killed per Spray")
+```
+
+### Conclusion:
+
+Taking a look at just the plot we would think that F is the most effective since it has the highest count of Bugs Killed.
+
+## Question 5
+
+```{r}
+data("airquality")
+
+air <- as.tibble(airquality)
+
+air %>%
+  select(Temp,Ozone,Month) %>%
+  mutate(Month = as.factor(Month)) %>%
+  ggplot(aes(x=Ozone,y=Temp)) + geom_point() + facet_wrap(~Month) +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+By the plots it looks like for every month there is a positive association between mean ozone in parts per billion from 1300 to 1500 hours at Roosevelt Island and the Maximum daily temperature in degrees Fahrenheit at La Guardia Airport. It seems that the best line intercept peaks around month 7 and 8.
+
+## Question 6
+```{r}
+Salinity <- read_csv("Cal Poly Pier Data - Salinity.csv")
+
+Salinity %>%
+  ggplot(aes(x=`Depth (m)`,y=`Salinity (ppt)`)) + geom_point() + geom_smooth(method = "lm", se = FALSE) +
+  xlab("Depth") + ylab("Salinity") + ggtitle("Salinity as Depth Increases")
+```
+
+## Question 6
+```{r}
+Salinity %>%
+  ggplot(aes(x=`Temperature (°C)`,y =`Salinity (ppt)`)) + geom_point() + geom_smooth(method = "lm", se = FALSE) +
+  xlab("Temperature") + ylab("Salinity") + ggtitle("Salinity as Temperature Increases")
+  
+```
+

@@ -31,7 +31,9 @@ dat <- read.csv("https://www.dropbox.com/s/vb85kbwqv5o8lia/Subset%20S2010data.TX
 Take a look at the data, using whatever R functions you prefer.  Do you see any possible issues?  Why might these present a problem to our analyses?
 
 ```
-We have missing data for gender and speed tickets
+We have missing data for gender and speed tickets, which means we cannot work with those observations.
+
+Furthermore we only have one grad student, which is an issue. You cannot estimate the variance with just one observation.
 ```
 
 Modify the code below to drop the problematic rows of data.
@@ -47,9 +49,15 @@ Consider testing the hypothesis "Male-idenfiying students are equally as respons
 
 Perform the appropriate test in R for this hypothesis.
 
+Hypotheses:
+\[
+\begin{split}
+& H_{o}: \vec{\mu_{\text{male}}} - \vec{\mu_{\text{female}}} = 0 \\  
+& H_{a}: \vec{\mu_{\text{male}}} - \vec{\mu_{\text{female}}} \neq 0
+\end{split}
+\]
 
-
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(Hotelling)
 
 htest <- hotelling.test(cbind(StudyHours,SpeedTickets,FastDrive) ~ factor(Gender), data = dat)
@@ -57,39 +65,73 @@ htest
 ```
 
 ```
-YOUR ANSWER HERE
-```
+We reject the null hypothesis that the mean vector for Male and mean vector for Female are the same, in other words that male-idenfiying students are equally as responsible as female-identifying students. 
 
+We conclude that the mean vector for Male and mean vector for Female are not the same, in other words that Male-idenfiying students are not equally as responsible as female-identifying students.
+```
+***
 The test above relied on the assumption that the covariance matrices were the same for all populations.  Express this assumption as a null hypothesis, in both symbols and words.
 
+Hypotheses:
+
 Words:
-Null Hypothesis: The true variance matrices are the same
-Alternate Hypothesis: The true variance matrices are not the same
+
+Null Hypothesis: The population covariance matrices for Male and Female are the same.
+
+Alternate Hypothesis: The population covariance matrices for Male and Female are not the same.
 
 Symbols:
 \[
 \begin{split}
-& H_{o} : \Sigma = \Sigma_{\text{pooled}} \\
-& H_{a} : \Sigma \neq \Sigma_{\text{pooled}} \\
+& H_{o} : \Sigma_{\text{Male}} = \Sigma_{\text{Female}} \\
+& H_{a} : \Sigma_{\text{Male}} \neq \Sigma_{\text{Female}} \\
 \end{split}
 \]
 
 Calculate the $M$ statistic for this test.  What do you expect it to be under the null?  What does the actual value suggest to you?
 
 ```{r}
-boxM_results <- boxM(cbind(StudyHours,SpeedTickets,FastDrive) ~ factor(Gender), data = dat)
-boxM_results
+female_vars <- dat %>%
+                filter(Gender == 0) %>%
+                dplyr::select(StudyHours,SpeedTickets,FastDrive)
+
+male_vars <- dat %>%
+                filter(Gender == 1) %>%
+                dplyr::select(StudyHours,SpeedTickets,FastDrive)
+
+female_cov <- cov(female_vars)
+male_cov <- cov(male_vars)
+
+female_n <- nrow(female_vars)
+male_n <- nrow(male_vars)
+
+top_frac <- (det(female_cov) ^ ((female_n - 1)/2)) * (det(male_cov) ^ ((male_n - 1)/2)) 
+
+pooled_cov <- ((female_n - 1) * (female_cov) + (male_n - 1) * (male_cov))/(female_n + male_n - 2)
+
+bot_frac <- det(pooled_cov) ^ ((female_n + male_n - 2)/2) 
+
+M <- top_frac/bot_frac
+
+M
 ```
 
 ```
-YOUR ANSWER HERE
+Under the null we expect our Box M value to be 1, the M statistic we get is 0.000868. This indicates that there is strong evidence that the covariance matrices for Male and Female are not the same.
 ```
-
+***
 Run the following code to perform the full hypothesis test.  What do you conclude?
 
+Hypotheses:
+\[
+\begin{split}
+& H_{o} : \Sigma_{\text{F}} = \Sigma_{\text{G}} = \Sigma_{\text{J}} = \Sigma_{\text{SE}}  = \Sigma_{\text{SO}}\\
+& H_{a} : \text{At least one year has a different covariance matrix.}
+\end{split}
+\]
 
 ```{r}
-#install.packages("heplots")
+# install.packages("heplots")
 library(heplots)
 
 boxM(cbind(StudyHours, SpeedTickets, FastDrive) ~ factor(Year), data = dat %>%
@@ -97,6 +139,9 @@ boxM(cbind(StudyHours, SpeedTickets, FastDrive) ~ factor(Year), data = dat %>%
 
 ```
 
+```
+At the 5% significance level, we reject the null hypothesis, that the covariance matrices for each year is equal. We conclude that there is at least on year with a different covariance matrix.
+```
 
 # Testing Covariance Matrices
 
@@ -123,20 +168,30 @@ Is * sigma_0 * rep(Is, each = p)
 ```
 
 ```
-There is a correlation between variables 1 and 3 and variables 2 and 4. On the other hand there is no correlation between variable 1 and 2.
+There is a correlation between variables Study Hours and FastDrive and between variables SpeedTickets and FastDrive. On the other hand there is no correlation between variable StudyHours and SpeedTickets.
 ```
-
+***
 Using R (not by hand!) calculate a test statistic for testing a null hypothesis of $H_0: \Sigma = \Sigma_0$. What does this suggest to you?
+
+Hypotheses:
+\[
+\begin{split}
+& H_{o} : \Sigma = \Sigma_{0} \\
+& H_{a} : \Sigma \neq \Sigma_{0} \\
+\end{split}
+\]
 
 ```{r}
 response_vars <- dat %>%
                 dplyr::select(StudyHours,SpeedTickets,FastDrive)
 
-det(cov(response_vars))/det(sigma_0)
+response_sigma <- cov(response_vars)
+
+det(response_sigma)/det(sigma_0)
 ```
 
 ```
-Since the ratio is very close to 1 there is not enough evidence to reject the null
+Since the ratio,0.987, is very close to 1 there is not enough evidence to reject the null hypothesis that the population covariance matrix equals Sigma 0.
 ```
 
 
@@ -144,13 +199,20 @@ Since the ratio is very close to 1 there is not enough evidence to reject the nu
 
 Is it reasonable to think that there is a no relationship between the hours studied, speeding tickets, and driving fast?  Calculate an appropriate test statistic and make an argument to address this question.
 
+Hypotheses:
+\[
+\begin{split}
+& H_{o} : |\Sigma| = \prod_{i=0}^{3} \sigma^{2}_{i} \\
+& H_{a} : |\Sigma| \neq \prod_{i=0}^{3} \sigma^{2}_{i}
+\end{split}
+\]
 
 ```{r}
-det(cov(response_vars))/prod(diag(cov(response_vars)))
+det(response_sigma)/prod(diag(response_sigma))
 ```
 
 ```
-Since the ratio is very close to 1 there is not enough evidence to reject the null.
+Since the ratio,0.891, is very close to 1 there is not enough evidence to reject the null.
 ```
 
 
@@ -158,17 +220,31 @@ Since the ratio is very close to 1 there is not enough evidence to reject the nu
 
 Is it reasonable to think that hours of study is independent of erratic driving (speeding tickets and fast driving)?  Calculate an appropriate test statistic and make an argument to address this question.
 
+Hypotheses:
+\[
+\begin{split}
+& H_{o} : |\Sigma| = \begin{bmatrix}
+                          \sigma^{2}_{1} & 0 & 0 \\
+                           0 & \sigma^{2}_{2} & \sigma_{2,3} \\
+                           0 & \sigma_{3,2} & \sigma^{2}_{3} \\
+                      \end{bmatrix} \\
+& H_{a} : |\Sigma| \neq \begin{bmatrix}
+                          \sigma^{2}_{1} & 0 & 0 \\
+                           0 & \sigma^{2}_{2} & \sigma_{2,3} \\
+                           0 & \sigma_{3,2} & \sigma^{2}_{3} \\
+                      \end{bmatrix}
+\end{split}
+\]
+
 ```{r}
 
-
-
-```
+det(response_sigma)/(response_sigma[1,1] * det(response_sigma[c(2,3),c(2,3)]))
 
 ```
-YOUR ANSWER HERE
+
 ```
-
-
+Since the ratio,0.999, is very close to 1 there is not enough evidence to reject the null.
+```
 
 # One-Way MANOVA
 
@@ -180,19 +256,59 @@ First, use and duplicate the following code to look at the data.  Do the plots s
 
 ```{r}
 ggplot(dat, aes(x = Year, y = StudyHours, fill = Year)) + geom_boxplot()
+ggplot(dat, aes(x = Year, y = SpeedTickets, fill = Year)) + geom_boxplot()
+ggplot(dat, aes(x = Year, y = FastDrive, fill = Year)) + geom_boxplot()
 ```
 
+```
+It looks like that the mean Speed Tickets for SE and SO are different than F and J. It also looks like the mean FastDrive for SO is different than the rest. The plots do not seem to support the statement.
+```
+***
 Next, perform an appropriate test to address the statement.  Make sure to state your null and alternate hypothesis, and to perform an appropriate adjustment of the data before using the `manova()` function in R.
 
+```{r message=FALSE, warning=FALSE}
+library(MVN)
+dat %>%
+  select(-Gender) %>%
+  nest(-Year) %>%
+  mutate(model = purrr::map(data, ~ mvn(.))) %>%
+  unnest(model) %>%
+  unnest(model) %>%
+  drop_na(Test) %>%
+  filter(str_detect(Test,"MVN")) %>%
+  select(Year, Test, Result)
+  
+```
+
 ```{r}
-### YOUR CODE HERE###
+dat %>%
+  count(Year)
+```
+SE has n<30 and is not MVN. So we fail Normality assumption. The rest either fail to reject the null or have a sample size greater than 30, if the test rejects.
+
+```{r}
+boxM(cbind(StudyHours, SpeedTickets,FastDrive) ~ factor(Year), data = dat)
 ```
 
-```
-YOUR ANSWER HERE
+We reject the null hypothesis that our covariance matrices are homogenous.
+
+\[
+\begin{split}
+& H_{o}: \text{All mean vectors for each group are equal to each other.} \\
+& H_{a}: \text{At least one mean vector is not equal to another.} \\
+\end{split}
+\]
+
+```{r}
+mv.mod <- manova(cbind(StudyHours, SpeedTickets,FastDrive) ~ factor(Year), data = dat)
+mv.sum <- summary(mv.mod, test = "Wilks")
+
+mv.sum
 ```
 
+At an $\alpha = 0.05$ we reject the null hypothesis that the the mean vector of Study Hours, Speed Tickets, and Fast Drive are the same for each Year. We conclude that there is at least one year that has a different mean vector of Study Hours, Speed Tickets, and Fast Drive.
 
+NOTE: We should not trust the model since we did not meet the Homogenous Variance Assumption & Normality Assumption.
 
 # Two-Way MANOVA
 
@@ -202,17 +318,67 @@ Now consider a different statement:
 
 Perform appropriate test(s) to address this statement.
 
+```{r message=FALSE, warning=FALSE}
+dat %>%
+  nest(-c(Gender,Year)) %>%
+  mutate(model = purrr::map(data, ~ mvn(.))) %>%
+  unnest(model) %>%
+  unnest(model) %>%
+  drop_na(Test) %>%
+  filter(str_detect(Test,"MVN")) %>%
+  select(Year,Gender, Test, Result)
+```
+
 ```{r}
-### YOUR CODE HERE###
+dat %>%
+  count(Gender,Year)
+```
+
+Freshman Female do not seem to have MVN DV's, and it does not have enough of a sample size for the CLT. So reject the Normality Assumption.
+
+```{r}
+boxM(cbind(StudyHours, SpeedTickets,FastDrive) ~ factor(Year)*factor(Gender), data = dat)
+```
+With a p-value of 2e-05, we reject the null that our covariance matrices for each group are homogenous. We conclude that they are not homogenous.
+
+Hypotheses:
+\[
+\begin{split}
+& \vec{\alpha} = \text{Treatment Effect of Year} \\
+& H_{o}: \vec{\alpha} = \vec{0} \\
+& H_{a}: \vec{\alpha} \neq \vec{0} \\ \\
+& \vec{\beta} = \text{Treatment Effect of Gender} \\ d
+& H_{o}: \vec{\beta} = \vec{0} \\
+& H_{a}: \vec{\beta} \neq \vec{0} \\ \\
+& \vec{\gamma} = \text{Treatment Effect of Interaction(Year X Gender)} \\
+& H_{o}: \vec{\gamma} = \vec{0} \\
+& H_{a}: \vec{\gamma} \neq \vec{0} \\
+\end{split}
+\]
+
+```{r}
+mv.mod <- manova(cbind(StudyHours, SpeedTickets,FastDrive) ~ factor(Year)*factor(Gender), data = dat)
+mv.sum <- summary(mv.mod, test = "Wilks")
+
+mv.sum
 ```
 
 ```
-YOUR ANSWER HERE
+We reject the null hypothesis for the Year treatment vector, that the Year treatment vector is the 0 vector. We conclude that the Year Treatment vector is not the zero vector, so there is at least one Year that does not have the same mean vector.
+
+We reject the null hypothesis for the Gender treatment vector, that the Year treatment vector is the 0 vector. We conclude that the Gender Treatment vector is not the zero vector, so the Male mean vector and Female mean vector are not the same.
+
+We fail to reject the null hypothesis for the Interaction (Gender X Year) treatment vector, that the Interaction treatment vector is the 0 vector. We cannot conclude that the Interaction Treatment vector is not the zero vector.
+
+NOTE: We should not trust the model since we did not meet the Homogenous Variance Assumption, and Normality Assumption.
 ```
 
 What are the assumptions about the data for the test you performed?
 
 
 ```
-YOUR ANSWER HERE
+The DV's are MVN within each group.
+Samples are Independent of one another
+Homogenous covariance matrices
+The error vectors are sampled from a multivariate normal distribution; 
 ```
